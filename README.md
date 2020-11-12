@@ -1,4 +1,7 @@
 # Cinema
-Reserve tickets
+Reserve tickets online
 
-no sk, email pw
+Django, JS, JQuery, Bootstrap, Stripe, PostgreSQL
+
+(no sk, email pw)
+
