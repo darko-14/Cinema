@@ -1,2 +1,0 @@
-# Cinema
-Reserve tickets
