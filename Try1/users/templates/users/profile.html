@@ -1,0 +1,29 @@
+{% extends "app/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<div class="d-flex justify-content-center">
+    
+    
+    <form method="POST" enctype="multipart/form-data" class=" ">
+        <div class="media  mt-5">
+            <img class="rounded-circle account-img" src="{{ user.profile.image.url  }}" alt="">
+            <div class="media-body mr-4">
+                <h3>{{ user.username }}</h3>
+                <p>{{ user.email }}</p>
+                {{ p_form|crispy }}
+            </div>
+        </div>
+        {% csrf_token %}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Информации</legend>
+            
+            {{ u_form|crispy }}
+            
+        </fieldset>
+        <div class="form-group">
+            <button class="btn btn-outline-info" type="submit">Ажурирај</button>
+        </div>
+    </form>
+</div>
+{% endblock content %}

@@ -1,0 +1,82 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="{% static 'booking/confirm1.css' %}" rel="stylesheet" type="text/css">
+    <script src="https://js.stripe.com/v3/"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>Confirm</title>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="stepper">
+            <div class="steps">
+                <div class="steps_inner">
+                    <ul class="progressbar">
+                        <li><i class="fa fa-film"></i> Movie</li>
+                        <li><i class="fa fa-stop"></i> Seats</li>
+                        <li><i class="fa fa-money"></i> Reserve</li>
+                        <li class="active"><i class="fa fa-check"></i> Confirm</li>
+                    </ul>
+                    <div></div>
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            
+            <div class="steps-title" style="padding-top: 20px;">
+                <h2 style="margin-left: 5%;">    
+                    STEP 4/4 <small>- CONFIRMATION</small>
+                </h2>
+            </div>
+            <div class="booked-info">
+                <div class="booked-info-movie">
+                    <h3>Филм</h3>
+                    <p>{{title}}</p>
+                    <p>{{date}}</p>
+                    <p>Cineplex, Sala 1</p>
+                </div>
+                <div class="booked-info-seats">
+                    <h3>Информации</h3>
+                    <p>Место: <b id="seats">{{seats}}</b></p>
+                    <p>На име: <b id="name">{{name}}</b></p>
+                    <p><b id="email">{{email}}</b></p>
+                </div>
+                <div class="booked-info-price">
+                    <h3>Вкупно</h3>
+                    <p>Цена на билет: <b>{{price}}</b>ден.</p>
+                    <p>Број на билети: <b id="seatnum">{{num}}</b></p>
+                    <p>Вкупна цена: <b id="total">{{total}}</b>ден.</p>
+                </div>
+            </div>
+            
+            <div class="info">
+                <div>
+                    <h1 style="color: red;">НЕУСПЕШНО!</h1>
+                    <h1>Your booking was canceled!</h1>
+                </div>
+           </div>
+           <div class="information">
+                <div>
+                    <b>NOTE: </b><p>You are not logged in! Please enter your email address to buy a ticket or log in . Note: You can only reserve tickets if you have a user profile. If you don't have one yet, register.</p>
+                </div>
+                <div>
+                <div>
+                    <p>You are not logged in! Please enter your email address to buy a ticket or log in . Note: You can only reserve tickets if you have a user profile. If you don't have one yet, register.</p>
+                </div>
+           </div>
+        <br>
+            
+        </div>
+        <div class="choose-action">
+            <h3>Choose an action: </h3>
+            <a href="#">Back</a><br>
+            <a href="{% url 'movies-page' %}">Home Page</a><br>
+            <a href="{% url 'home-page' %}">Movies Page</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,1790 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="{% static 'booking/booking1.css' %}" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script
+        src="https://code.jquery.com/jquery-3.5.1.js"
+        integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+        crossorigin="anonymous">
+    </script>
+    <title>Резервација</title>
+</head>
+
+<script>
+    $(document).ready(function(){
+
+        
+
+        //Insert reserved seats
+        var query = $('#queryset').text()
+        var letters = $('#letters').text()
+        var numbers = $('#numbers').text()
+        console.log(query)
+
+        letters = letters.substring(1,letters.length-1)
+        letters = letters.replace(/'/g, "")
+        letters = letters.replace(/ /g, "")
+        letters = letters.replace(/,/g, "")
+        //console.log(letters)
+        
+        numbers = numbers.substring(1,numbers.length-1)
+        numbers = numbers.replace(/'/g, "")
+        numbers = numbers.replace(/.(?= )/g, "")
+        numbers = numbers.split(" ")
+        //console.log(numbers)
+
+        var i = 0
+        while (i < letters.length){
+            var row = letters[i]
+            var seats = numbers[i]
+            seats = seats.split(',')
+            for (var z = 0; z<seats.length; z++){
+                var seat = seats[z]
+                $('tr[data-id='+row+'] td:nth-child('+(seat)+') div img').attr("src", "/media/reserved.png");
+                //console.log(row +" "+ seat)
+            }
+
+            
+            i = i + 1
+        }
+        
+        
+        $("img").click(function(){     
+
+            // Resets the seat to default when selected new
+            $('img').each(function(){
+                if (this.src.length == 42){
+                    $(this).attr("src", "/media/available.png")
+                }
+                if (this.src.length == 40){
+                    $(this).attr("title", "This seat is reserved!")
+                }
+            });
+            
+            // Selects only available seats! 40=Reserved, 41=Available, 42=Selected
+            if (this.src.length == 40){
+                console.log("This seat is reserved! "+this.src.length)
+            }else if(this.src.length == 41){
+                var numOfSeats = $('#seatnum').val()
+                var row = $(this).parent().parent().parent().data("id")
+                var seat = $(this).parent().parent().index() + 1
+                var price = $('#price').text()
+                var total = price * numOfSeats
+                $('#numofseatz').text(numOfSeats)
+                $('#total').text(total)
+                
+                $('#form-num').val(numOfSeats)
+                $('#form-total').val(total)
+
+                console.log("This seat is available! "+this.src.length)
+                console.log(numOfSeats+" "+row+seat);
+
+                // Select and display multiple Seats
+                var numberOfSeats = parseInt(numOfSeats)
+                var i = 0;
+                var l = []
+
+                while(i<numberOfSeats){                   
+                    var z = $('tr[data-id='+row+'] td:nth-child('+(seat-i)+') div img').attr("src")
+                    if (z.length == 20){
+                        $('tr[data-id='+row+'] td:nth-child('+(seat-i)+') div img').attr("src", "/media/green_seat.png");
+                        l.push(seat-i)  
+                    }else if (z.length == 19){
+                        i = numOfSeats
+                    }
+                    else{
+                        numberOfSeats = numberOfSeats + 1
+                    } 
+                    i = i + 1
+                }
+                l.reverse()
+                console.log(l)
+                
+                $('#rowz').text(row + " " + l)
+                $('#form-seats').val(row +" "+ l)
+            }else{
+                console.log("This seat is selectd! "+this.src.length)
+            }
+           
+        });    
+    });
+</script>
+
+<body>
+    <div class="wrapper">
+        <div class="stepper">
+            <div class="steps">
+                <div class="steps_inner">
+                    <ul class="progressbar">
+                        <li><i class="fa fa-film"></i> Филм</li>
+                        <li class="active"><i class="fa fa-stop"></i> Резервација</li>
+                        <li><i class="fa fa-money"></i> Наплата</li>
+                        <li><i class="fa fa-check"></i> Потврда</li>
+                    </ul>
+                    <div></div>
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            
+            <div class="steps-title" style="padding-top: 20px;">
+                <h2 style="margin-left: 5%;">    
+                    ИЗБЕРИ МЕСТО <small>- чекор 2/4</small>
+                </h2>
+            </div>
+            <!-- <h3>All Queries</h3>
+            {% for y in all %}
+                <div>{{y}}</div>
+            {% endfor %}<hr>
+            <div>{{q}}</div><hr>
+            <h3>Specific Queries</h3>
+            {% for s in q %}
+                <div>{{s}}</div>
+            {% endfor %}<hr> -->
+            <div hidden>
+                <div id="queryset">{{f}}</div><hr>
+                <div id="letters">{{w}}</div><hr>
+                <div id="numbers">{{e}}</div><hr>
+            </div>
+            <div class="number-of-seats">
+                <div class="movie-title">
+                    <h3><small>Филм: </small>{{ title }}</h3>
+                    <h3><small>Цена на билет: </small>{{ price }}ден.</h3>
+                </div>
+                <div class="select-seats">
+                    <label for="seatnum">Број на карти: </label>
+                    <select style="padding:2px; border:1px solid grey; border-radius:8%;" id="seatnum" name="seats">
+                        <option value="1">1</option>
+                        <option selected="selected" value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                    </select>
+                </div>
+                
+            </div>
+            <div class="seat-reserve">
+                <div class="seat-reserve-top">
+                    <h3>Cinemax - Сала 1</h3>
+                    <h3>Премиера: {{ date }}</h3>
+                </div>
+                <div class="line"></div>
+                <div class="seats-content">
+                    <div class="identifier">
+                        <span>A</span>
+                        <span>B</span>
+                        <span>C</span>
+                        <span>D</span>
+                        <span>E</span>
+                        <span>F</span>
+                        <span>G</span>
+                        <span>H</span>
+                        <span>I</span>
+                        <span>J</span>
+                        <span>K</span>
+                        <span>L</span>
+                    </div>
+                    
+                    <table class="table-seats">
+                        <th>
+                            <td class="screen">
+                                <p>Платно</p>
+                                <div class="screen-line"></div>
+                            </td>
+                        </th>
+                        <tr data-id="A">
+                            <td>
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td>
+                            <td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td>
+                            <td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td>
+                            <td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td>
+                            <td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td>
+                            <td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td>
+                            <td class="seat">
+                                <div>
+                                    <img src="\media\al.png" hidden alt="">
+                                </div>
+                            </td>
+                            <td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td>
+                            <td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\al.png" hidden alt="">
+                                </div>
+                            </td>
+                            <td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td>
+                            <td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td>
+                            <td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td>
+                            <td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td>
+                            <td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td>
+                            <td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr data-id="B">
+                            <td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\al.png" hidden alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\al.png" hidden alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td>
+                            
+                        </tr>
+                        <tr data-id="C">
+                            <td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\al.png" hidden alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\al.png" hidden alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr data-id="D">
+                            <td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\al.png" hidden alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\al.png" hidden alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr data-id="E">
+                            <td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\al.png" hidden alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\al.png" hidden alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td>
+                            
+                        </tr>
+                        <tr data-id="F">
+                            <td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\al.png" hidden alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\al.png" hidden alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td>
+                            
+                        </tr>
+                        <tr data-id="G">
+                            <td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\al.png" hidden alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\al.png" hidden alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr data-id="H">
+                            <td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\al.png" hidden alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\al.png" hidden alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td>
+                            
+                        </tr>
+                        <tr data-id="I">
+                            <td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\al.png" hidden alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\al.png" hidden alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr data-id="J">
+                            <td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\al.png" hidden alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\al.png" hidden alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr data-id="K">
+                            <td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\al.png" hidden alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\al.png" hidden alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr data-id="L">
+                            <td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\al.png" hidden alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\al.png" hidden alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td><td class="seat">
+                                <div>
+                                    <img src="\media\available.png" alt="">
+                                </div>
+                            </td>
+                        </tr>
+                       
+                    </table>
+                    <div class="legend">
+                        <ul>
+                            
+                            <li>
+                                <img src="\media\al.png" alt=""> Слободни
+                            </li>
+                            <li>
+                                <img src="\media\sl.png" alt=""> Селектирани
+                            </li>
+                            <li>
+                                <img src="\media\rl.png" alt=""> Резервирани
+                            </li>
+                        </ul>
+                    </div>
+                    
+                </div>
+                <div class="booked-info">
+                    <div class="booked-seats">
+                        <h3>Резервација</h3>
+                        <p>Место: <b id="rowz">-</b></p>
+                    </div>
+                    <div class="booked-price">
+                        <h3>Цена</h3>
+                        <p>Број на билети: <b id="numofseatz">0</b> x <b id="price">{{price}}</b>ден.</p>
+                        <p>Вкупно: <b id="total">0</b>ден.</p>
+                    </div>
+                </div>
+                <hr>
+                <!-- <div class="line"></div> -->
+                <!-- <div class="performances">
+                    <div class="previous-performance">
+                        <a href="#">Previous performance</a><br>
+                        <p>Tomorrow, October 9th, 2020 - 5:45 pm</p>
+                        <p>Hall 8</p>
+                    </div>
+                    <div class="next-performance">
+                        <a href="#">Next performance</a>
+                        <p>Tomorrow, October 9th, 2020 - 5:45 pm</p>
+                        <p>Hall 8</p>
+                    </div>
+                </div> -->
+        </div>
+            <div class="must-login">
+                <div>
+                    <h3>ВАЖНО</h3>
+                    <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Error sunt tenetur soluta aut. Cum ipsam aliquid voluptatum animi itaque, ad quaerat ipsa veniam pariatur maiores! Libero expedita vitae aperiam dolorum eum, excepturi inventore quidem in modi neque consequuntur soluta cumque vero adipisci sed reiciendis distinctio optio alias suscipit temporibus provident?.</p>
+                </div>
+                <div style="margin: auto;">
+                    <a class="nav-link " href="#" id="navbardrop" data-toggle="dropdown" style="color: black;">
+                      <i class="fa fa-user" style="font-size: 20px;"></i>
+                    </a>
+                    <div class="dropdown-menu">
+                      {% if user.is_authenticated %}
+                          <a href="{% url 'profile' %}" style="text-decoration:none; color:black;">{{ user }}</a><br>
+                          <a style="text-decoration:none; color:black;" href="{% url 'logout' %}">Ојдави се</a>
+                      {% else %}
+                          <a style="text-decoration:none; color:black;" href="{% url 'login' %}">Најави се</a>
+                          <!-- <a class="nav-item nav-link dropdown-item" href="{% url 'register' %}">Sign Up</a> -->
+                      {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            
+            <div>
+                <form action="buy/" method="POST" style="padding: 15px 15px; width: 300px;  border:1px solid grey; border-radius:3%; margin:auto;">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <input type="text" placeholder="{{title}}" value="{{title}}" name="title" hidden>
+                        <input type="text" placeholder="{{date}}" value="{{date}}" name="date" hidden>
+                        <input type="text" id="form-seats" placeholder="Seats" value="" name="seats" required hidden>
+                        <input type="number" placeholder="{{price}}" value="{{price}}" name="price" hidden>
+                        <input type="number" id="form-num" placeholder="Number of seats" value="" name="num" required hidden>
+                        <input type="number" id="form-total" placeholder="Total Price" value="" name="total" required hidden><br/>
+                        <label>Име и презиме: </label>
+                        <input style="padding:10px; width:90%; border:1px solid grey; border-radius:3%;" type="text" name="name" value="{{ user.username }}" required><br><br>
+                        <label>Email адреса: </label>
+                        <br><input style="padding:10px; width:90%; border:1px solid grey; border-radius:3%;" type="email" name="email" value="{{ user.email }}" required><br><hr>
+                    </div>
+                    <div class="form-group">
+                        <input style="padding:10px; border:1px solid grey; border-radius:3%;" type="submit" value="Резервирај">
+                    </div>
+                </form><br>
+            </div>
+            <hr style="width: 95%;"><br>
+            <div style="margin-left: 5%;">
+                <a style="text-decoration:none; color:black; padding:5px; border:1px solid grey; border-radius:3%;" class="abort" href="{% url 'movies-page' %}">Почетна</a>
+                <a style="text-decoration:none; color:black; padding:5px; border:1px solid grey; border-radius:3%;" class="abort" href="{% url 'home-page' %}">Назад</a>
+            </div>
+            <br>
+        </div><br>
+    </div>
+</body>
+</html>

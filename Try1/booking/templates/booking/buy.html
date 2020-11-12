@@ -1,0 +1,255 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="{% static 'booking/buy1.css' %}" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://js.stripe.com/v3/"></script>
+    <script
+        src="https://code.jquery.com/jquery-3.5.1.js"
+        integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+        crossorigin="anonymous"></script>
+    <title>Плаќање</title>
+</head>
+<style>
+        /**
+    * The CSS shown here will not be introduced in the Quickstart guide, but shows
+    * how you can use CSS to style your Element's container.
+    */
+    .StripeElement {
+        box-sizing: border-box;
+    
+        height: 40px;
+    
+        padding: 10px 12px;
+    
+        border: 1px solid transparent;
+        border-radius: 4px;
+        background-color: white;
+    
+        box-shadow: 0 1px 3px 0 #e6ebf1;
+        -webkit-transition: box-shadow 150ms ease;
+        transition: box-shadow 150ms ease;
+    }
+    
+    .StripeElement--focus {
+        box-shadow: 0 1px 3px 0 #cfd7df;
+    }
+    
+    .StripeElement--invalid {
+        border-color: #fa755a;
+    }
+    
+    .StripeElement--webkit-autofill {
+        background-color: #fefde5 !important;}
+</style>
+
+<script>
+    $(document).ready(function(){
+
+        
+
+        var numOfSeats = $('#seatnum').text()
+        var seats = $('#seats').text()
+        var name = $('#name').text()
+        var email = $('#email').text()
+        var total = $('#total').text()
+        $('#form-num').val(numOfSeats)
+        $('#form-total').val(total)
+        $('#form-seats').val(seats)
+        $('#form-name').val(name)
+        $('#form-email').val(email)
+    });
+</script>
+<body>
+    <div class="wrapper">
+        <div class="stepper">
+            <div class="steps">
+                <div class="steps_inner">
+                    <ul class="progressbar">
+                        <li><i class="fa fa-film"></i> Филм</li>
+                        <li><i class="fa fa-stop"></i> Резервација</li>
+                        <li class="active"><i class="fa fa-money"></i> Наплата</li>
+                        <li><i class="fa fa-check"></i> Потврда</li>
+                    </ul>
+                    <div></div>
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            
+            <div class="steps-title" style="padding-top: 20px;">
+                <h2 style="margin-left: 5%; ">    
+                    НАПЛАТА <small>- чекор 3/4</small>
+                </h2>
+            </div>
+            <div class="booked-info" style="padding:5px; border:1px solid lightgrey;">
+                <div class="booked-info-movie">
+                    <h3>Филм</h3>
+                    <p>{{title}}</p>
+                    <p>{{date}}</p>
+                    <p>Cinemax - Сала 1</p>
+                </div>
+                <div class="booked-info-seats">
+                    <h3>Информации</h3>
+                    <p>Место: <b id="seats">{{seats}}</b></p>
+                    <p>На име: <b id="name">{{name}}</b></p>
+                    <p><b id="email">{{email}}</b></p>
+                </div>
+                <div class="booked-info-price">
+                    <h3>Вкупно</h3>
+                    <p>Цена на билет: <b>{{price}}</b>ден.</p>
+                    <p>Број на билети: <b id="seatnum">{{num}}</b></p>
+                    <p>Вкупна цена: <b id="total">{{total}}</b>ден.</p>
+                </div>
+            </div>
+            
+            <div class="info">
+                <div>
+                    <p>Succesful: 4242 4242 4242 4242 You are not logged in! Please enter your email address to buy a ticket or log in . Note: You can only reserve tickets if you have a user profile. If you don't have one yet, register.</p>
+                </div>
+                <div>
+                <div>
+                    <p>Failure: 4000 0027 6000 3184 You are not logged in! Please enter your email address to buy a ticket or log in . Note: You can only reserve tickets if you have a user profile. If you don't have one yet, register.</p>
+                </div>
+           </div>
+        </div>
+        <hr style="width: 90%;"><br>
+        <div style="margin-left: 5%; display: flex; justify-content:space-around;">
+        <div>
+            <div>
+                <input type="radio" name="" id="" checked>
+                <label for="">Плати со картичка</label><br/>
+                <img src="/media/cards.png" alt="">
+            </div>        
+        </div>
+        
+        
+       <form action="confirm/" method="POST" id="payment-form" style="padding: 15px; width: 350px; border:1px solid grey; border-radius:3%;">
+        {% csrf_token %}
+        <!-- Stripe -->
+        <div class="form-row">
+            <label for="card-element">
+                Внеси ги твоите податоци
+            </label>
+            <br><hr>
+            <div id="card-element">
+                <!-- A Stripe Element will be inserted here. -->
+            </div>
+        
+            <!-- Used to display form errors. -->
+            <div id="card-errors" role="alert"></div>
+        </div>
+        
+        <div class="form-group" style="text-align: center;" hidden>
+            <input type="text" placeholder="{{title}}" value="{{title}}" name="title">
+            <input type="text" placeholder="{{date}}" value="{{date}}" name="date">
+            <input type="text" id="form-seats" placeholder="Seats" value="" name="seats" required>
+            <input type="number" placeholder="{{price}}" value="{{price}}" name="price">
+            <input type="number" id="form-num" placeholder="Number of seats" value="" name="num" required>
+            <input type="number" id="form-total" placeholder="Total Price" value="" name="total" required><br/>
+            <!-- <label>Enter Name: </label><br> -->
+            <input type="text" name="name" id="form-name" placeholder="Name" required><br>
+            <!-- <label>Enter email address: </label><br> -->
+            <input type="email" name="email" id="form-email" placeholder="Email" required><br>
+
+        </div>
+        <br>
+        <div>
+            <input type="checkbox" required>
+            <label for="vehicle1"> Да, ги прифаќам општите услови.</label><br>
+            <input type="checkbox" required>
+            <label for="vehicle2"> Да, ја прочитав политиката за приватност.</label><br>
+        </div>
+        <hr>
+        <div>
+            <input style="padding:10px; border:1px solid grey; border-radius:3%;" type="submit" value="Резервирај">
+        </div>
+    </form>
+    <div>
+        
+    </div>
+    </div><br><hr style="width: 90%;"><br>
+    <div style="margin-left: 5%;">
+        <a style="text-decoration:none; color:black; padding:5px; border:1px solid grey; border-radius:3%;" class="abort" href="{% url 'movies-page' %}">Почетна</a>
+        <a style="text-decoration:none; color:black; padding:5px; border:1px solid grey; border-radius:3%;" class="abort" href="{% url 'movies-page' %}">Откажи</a>
+    </div> 
+    <br>
+    </div>
+    <br>
+</body>
+<script>
+    // Create a Stripe client.
+var stripe = Stripe('pk_test_51HhaDFEDvAaMveAkM3qCJXVsxdCyH0iF17uqDEzAHUW5QxRpMuuL87y5dOjq0FIuQ7HW03CgSBvghmuqO4IhFEQG00qYuNhXIU');
+
+// Create an instance of Elements.
+var elements = stripe.elements();
+
+// Custom styling can be passed to options when creating an Element.
+// (Note that this demo uses a wider set of styles than the guide below.)
+var style = {
+base: {
+    color: '#32325d',
+    fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+    fontSmoothing: 'antialiased',
+    fontSize: '16px',
+    '::placeholder': {
+    color: '#aab7c4'
+    }
+},
+invalid: {
+    color: '#fa755a',
+    iconColor: '#fa755a'
+}
+};
+
+// Create an instance of the card Element.
+var card = elements.create('card', {style: style});
+
+// Add an instance of the card Element into the `card-element` <div>.
+card.mount('#card-element');
+// Handle real-time validation errors from the card Element.
+card.on('change', function(event) {
+var displayError = document.getElementById('card-errors');
+if (event.error) {
+    displayError.textContent = event.error.message;
+} else {
+    displayError.textContent = '';
+}
+});
+
+// Handle form submission.
+var form = document.getElementById('payment-form');
+form.addEventListener('submit', function(event) {
+event.preventDefault();
+
+stripe.createToken(card).then(function(result) {
+    if (result.error) {
+    // Inform the user if there was an error.
+    var errorElement = document.getElementById('card-errors');
+    errorElement.textContent = result.error.message;
+    } else {
+    // Send the token to your server.
+    stripeTokenHandler(result.token);
+    }
+});
+});
+
+// Submit the form with the token ID.
+function stripeTokenHandler(token) {
+// Insert the token ID into the form so it gets submitted to the server
+var form = document.getElementById('payment-form');
+var hiddenInput = document.createElement('input');
+hiddenInput.setAttribute('type', 'hidden');
+hiddenInput.setAttribute('name', 'stripeToken');
+hiddenInput.setAttribute('value', token.id);
+form.appendChild(hiddenInput);
+
+// Submit the form
+form.submit();
+}
+</script>
+</html>

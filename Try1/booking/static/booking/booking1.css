@@ -1,0 +1,188 @@
+body {
+    background-color: rgb(13, 13, 36);
+    margin: 0;
+}
+.wrapper{
+    height: auto;
+    width: 85%;
+    margin: auto;
+    margin-top: 15px;
+}
+.stepper{
+    background-color: #F2F2F2;
+    height: 140px;
+    z-index: -2;
+    position: relative;
+    width: 90%;
+    margin: auto;
+}
+.content{
+    background-color: #F2F2F2;
+    height: auto;
+    width: 90%;
+    margin: auto;
+
+}
+.steps_inner{
+    padding-top: 15px;
+}
+.progressbar{
+    counter-reset: step;
+}
+.progressbar li{
+    list-style-type: none;
+    float: left;
+    width: 25%;
+    text-align: center;
+    position: relative;
+}
+.progressbar li:before{
+    content: counter(step);
+    counter-increment: step;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    border: 2px solid #ddd;
+    display: block;
+    text-align: center;
+    margin: 0 auto 10px auto;
+    border-radius: 50%;
+    background-color: white;
+}
+.progressbar li:after{
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 10px;
+    background-color:lightgray ;
+    top: 11px;
+    left: -49%;
+    z-index: -1;
+}
+.progressbar li:first-child::after{
+    content: none;
+}
+.progressbar li:first-child:before{
+    border-color: green;
+}
+.progressbar li:first-child + li:after{
+    background-color: green;
+}
+.progressbar li.active{
+    color: green;
+}
+.progressbar li.active:before{
+    border-color: green;
+}
+.progressbar li.active + li:first-child::after{
+    background-color: green;
+}
+.number-of-seats{
+    display: grid;
+    margin: 15px 4%;
+}
+.seat-reserve{
+    background-color: white;
+    height: auto;
+    width: 90%;
+    padding: 0 20px;
+    margin: auto;
+    position: relative;
+}
+.seat-reserve-top{
+    display: flex;
+    justify-content: space-between;
+}
+.line{
+    height: 1px;
+    background-color: grey;
+    width: 100%;
+}
+.seats-content{
+    background-color: white;
+    height: auto;
+    width: 100%;
+    margin: 20px auto;
+    position: relative;
+}
+.identifier{
+    position: absolute;
+    top:  41px;
+}
+.identifier span{
+    height: 35px;
+    display: block;
+}
+.table-seats{
+    position: relative;
+    background-color: transparent;
+    margin-left: 95px;
+    margin-top: 100px;
+}
+table{
+    border-spacing: 0;
+}
+.table-seats tr{
+    height: 35px;
+}
+.screen{
+    position: absolute;
+    top: -80px;
+    left: 0;
+    max-height: 30px;
+    width: 550px;
+}
+.screen p{
+    margin: auto;
+    text-align: center;
+}
+.screen-line{
+    margin-top: 10px;
+    width: 100%;
+    height: 20px;
+    border: 3px solid #c1c1c1;
+    border-color: #c1c1c1 transparent transparent;
+    border-radius: 90%/100px 100px 0 0;
+}
+.legend{
+    margin: 30px 0 100px 0;
+}
+.legend ul{
+    display: flex;
+    justify-content: left;
+}
+.legend li{
+    list-style-type: none;
+    display: flex;
+    margin-right: 30px;
+}
+.legend img{
+    margin-right: 7px;
+}
+.performances{
+    display: flex;
+    justify-content: space-between;
+    
+}
+.booked-info{
+    display: flex;
+    justify-content: space-around;
+}
+.must-login{
+    text-align: center;
+    padding: 0 5%;
+    margin-bottom: 25px;
+}
+.booking-buttons{
+    display: flex;
+    justify-content: space-between;
+    padding: 2% 5%;
+}
+.booking-buttons a{
+    border: 2px solid green;
+    color: black;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}

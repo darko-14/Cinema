@@ -1,0 +1,84 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="{% static 'booking/confirm1.css' %}" rel="stylesheet" type="text/css">
+    <script src="https://js.stripe.com/v3/"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>Потврда</title>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="stepper">
+            <div class="steps">
+                <div class="steps_inner">
+                    <ul class="progressbar">
+                        <li><i class="fa fa-film"></i> Филм</li>
+                        <li><i class="fa fa-stop"></i> Резервација</li>
+                        <li><i class="fa fa-money"></i> Наплата</li>
+                        <li class="active"><i class="fa fa-check"></i> Потврда</li>
+                    </ul>
+                    <div></div>
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            
+            <div class="steps-title" style="padding-top: 20px;">
+                <h2 style="margin-left: 5%;">    
+                    ПОТВРДА  <small>- чекор 4/4 </small>
+                </h2>
+            </div>
+            <div class="booked-info" style="padding:5px; border:1px solid lightgrey;">
+                <div class="booked-info-movie">
+                    <h3>Филм</h3>
+                    <p>{{title}}</p>
+                    <p>{{date}}</p>
+                    <p>Cinemax - Сала 1</p>
+                </div>
+                <div class="booked-info-seats">
+                    <h3>Информации</h3>
+                    <p>Место: <b id="seats">{{seats}}</b></p>
+                    <p>На име: <b id="name">{{name}}</b></p>
+                    <p><b id="email">{{email}}</b></p>
+                </div>
+                <div class="booked-info-price">
+                    <h3>Вкупно</h3>
+                    <p>Цена на билет: <b>{{price}}</b>ден.</p>
+                    <p>Број на билети: <b id="seatnum">{{num}}</b></p>
+                    <p>Вкупна цена: <b id="total">{{total}}</b>ден.</p>
+                </div>
+            </div>
+            {% if messages %}
+                {% for message in messages %}
+                <div style="display:flex; justify-content:center; margin:20px 0; ">
+                    <h1>{{ message }}</h1>
+                </div>
+                {% endfor %}
+            {% endif %}
+            <hr style="width: 90%;">
+            <!-- <div class="info">
+                <div>
+                    <h1 style="color: green;">УСПЕШНО!</h1>
+                    <h1>Thank you for purchasing a ticket!</h1>
+                </div>
+           </div> -->
+           <div class="information">
+                <h4>ВАЖНО</h4>
+                <p>При успешно плаќање, ќе ви биде испратен меил со инструкции за користење на билетот.</p>
+           </div>
+        
+            
+        
+        <hr style="width:90%;"><br>
+        <div style="margin-left: 5%;">
+            <a style="text-decoration:none; color:black; padding:5px; border:1px solid grey; border-radius:3%;" href="{% url 'movies-page' %}">Почетна</a>
+            <a style="text-decoration:none; color:black; padding:5px; border:1px solid grey; border-radius:3%;" href="{% url 'home-page' %}">Филмови</a>
+        </div><br>
+    </div><br>
+</div>
+</body>
+</html>
